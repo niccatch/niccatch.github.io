@@ -1,0 +1,2117 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>기초영어회화 200문장</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #f0f4f8;
+            color: #1e293b;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 1rem;
+        }
+        .container {
+            max-width: 600px;
+            width: 100%;
+            background-color: #fff;
+            padding: 2rem;
+            border-radius: 1.5rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        .card {
+            background-color: #fff;
+            border-radius: 1.5rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease-in-out;
+            border: 2px solid #e2e8f0;
+        }
+        .correct {
+            border-color: #10b981;
+        }
+        .wrong {
+            border-color: #ef4444;
+        }
+        .korean-text {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #334155;
+            margin-bottom: 2rem;
+        }
+        .english-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            font-size: 1.25rem;
+            border-radius: 0.75rem;
+            border: 2px solid #cbd5e1;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+        .english-input:focus {
+            border-color: #3b82f6;
+        }
+        .btn {
+            padding: 0.75rem 2rem;
+            font-weight: 600;
+            border-radius: 0.75rem;
+            transition: background-color 0.3s ease, transform 0.1s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .btn-primary {
+            background-color: #3b82f6;
+            color: white;
+        }
+        .btn-primary:hover {
+            background-color: #2563eb;
+            transform: translateY(-2px);
+        }
+        .btn-secondary {
+            background-color: #94a3b8;
+            color: white;
+        }
+        .btn-secondary:hover {
+            background-color: #64748b;
+            transform: translateY(-2px);
+        }
+        .message-box {
+            background-color: #fef3c7;
+            color: #92400e;
+            padding: 1rem;
+            border-radius: 0.75rem;
+            margin-top: 1rem;
+            display: none;
+            font-weight: 500;
+        }
+        .correct-message {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+        .error-message {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+        .example-dialogue {
+            background-color: #e2e8f0;
+            padding: 1rem;
+            border-radius: 0.75rem;
+            margin-top: 1rem;
+            display: none;
+            text-align: left;
+            white-space: pre-wrap;
+            line-height: 1.5;
+            color: #334155;
+        }
+        .progress-bar {
+            width: 100%;
+            background-color: #e5e7eb;
+            border-radius: 0.75rem;
+            height: 12px;
+            margin-top: 1.5rem;
+            overflow: hidden;
+        }
+        .progress {
+            height: 100%;
+            background-color: #10b981;
+            transition: width 0.5s ease-in-out;
+        }
+        .listening-status {
+            margin-top: 1rem;
+            font-weight: 600;
+            color: #3b82f6;
+            display: none;
+        }
+        .end-screen {
+            display: none;
+        }
+        .end-screen h2 {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #334155;
+            margin-bottom: 1rem;
+        }
+        .end-screen p {
+            color: #64748b;
+            margin-bottom: 2rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div id="start-screen" class="card">
+        <h1 class="text-3xl font-bold mb-6 text-gray-800">기초영어회화 200문장</h1>
+        <p class="text-lg text-gray-600 mb-8">한 번에 몇 개의 문장을 연습하고 싶으세요?</p>
+        <div class="flex justify-center space-x-4">
+            <button class="btn btn-primary" onclick="startPractice(5)">5개</button>
+            <button class="btn btn-primary" onclick="startPractice(10)">10개</button>
+            <button class="btn btn-primary" onclick="startPractice(20)">20개</button>
+            <button class="btn btn-primary" onclick="startWrongAnswersPractice()">틀린 문장 연습</button>
+        </div>
+    </div>
+
+    <div id="practice-screen" style="display:none;">
+        <div class="card">
+            <h1 class="text-3xl font-bold mb-6 text-gray-800">영어 회화 말하기 연습</h1>
+            <div class="korean-text" id="korean-phrase"></div>
+            <input type="text" id="english-input" class="english-input text-center" placeholder="여기에 영어 문장을 입력하세요">
+            <div class="listening-status" id="listening-status">음성 인식을 시작하려면 마이크를 켜주세요.</div>
+            <div id="message-box" class="message-box mt-4"></div>
+            <div id="example-dialogue" class="example-dialogue"></div>
+            <div class="mt-6 flex justify-center space-x-4">
+                <button id="check-btn" class="btn btn-primary">확인</button>
+                <button id="speak-btn" class="btn btn-primary">음성으로 대답하기</button>
+                <button id="next-btn" class="btn btn-secondary" style="display:none;">다음 문제</button>
+                <button id="reveal-btn" class="btn btn-secondary">정답 보기</button>
+            </div>
+        </div>
+        <div class="progress-bar mt-4">
+            <div id="progress-bar" class="progress" style="width: 0%;"></div>
+        </div>
+    </div>
+    
+    <div id="end-screen" class="card end-screen">
+        <h2 id="end-message"></h2>
+        <p id="end-score"></p>
+        <button class="btn btn-primary" onclick="restartPractice()">다시 연습하기</button>
+        <button class="btn btn-primary" onclick="startWrongAnswersPractice()">틀린 문장 다시 연습하기</button>
+    </div>
+</div>
+
+<script>
+    const allPhrases = [
+        { 
+            korean: "말 취소할게.", 
+            english: "I take that back.",
+            example: "A: The movie was terrible.\nB: I take that back. It was actually pretty good.",
+            hint: "take"
+        },
+        { 
+            korean: "내 폰이 없어졌어.", 
+            english: "My phone is missing.",
+            example: "A: What's wrong?\nB: My phone is missing. Can you help me find it?",
+            hint: "missing"
+        },
+        { 
+            korean: "나 완전 멘붕이야.", 
+            english: "I'm falling apart.",
+            example: "A: What happened?\nB: I just failed the test. I'm falling apart.",
+            hint: "apart"
+        },
+        { 
+            korean: "커피는 내가 쓸게.", 
+            english: "Coffee's on me.",
+            example: "A: Let's grab some coffee.\nB: Great! Coffee's on me.",
+            hint: "on me"
+        },
+        { 
+            korean: "나 커피 마시는 중이야.", 
+            english: "I'm on a coffee break.",
+            example: "A: Are you busy?\nB: No, I'm on a coffee break right now.",
+            hint: "break"
+        },
+        { 
+            korean: "피부가 뒤집어졌어.", 
+            english: "My skin is breaking out.",
+            example: "A: Your skin looks a little red.\nB: Yeah, I know. My skin is breaking out.",
+            hint: "out"
+        },
+        { 
+            korean: "독감이 유행이래.", 
+            english: "The flu is going around.",
+            example: "A: You should be careful.\nB: Why? What's wrong?\nA: The flu is going around.",
+            hint: "around"
+        },
+        { 
+            korean: "따뜻하게 입고 다녀. 꽁꽁 싸매고 다녀.", 
+            english: "Bundle up.",
+            example: "A: It's cold outside.\nB: I know. You should bundle up.",
+            hint: "bundle"
+        },
+        { 
+            korean: "네 생각은 뭔데?", 
+            english: "What's on your mind?",
+            example: "A: You look worried.\nB: What's on your mind?",
+            hint: "mind"
+        },
+        { 
+            korean: "조만간 한번 보자.", 
+            english: "Let's catch up soon.",
+            example: "A: It was great seeing you.\nB: You too! Let's catch up soon.",
+            hint: "catch up"
+        },
+        { 
+            korean: "우유가 다 떨어졌어.", 
+            english: "I'm out of milk.",
+            example: "A: I want to have some coffee.\nB: We can't. I'm out of milk.",
+            hint: "out of"
+        },
+        { 
+            korean: "음식을 뒤집어.", 
+            english: "Turn it over.",
+            example: "A: How long should I grill this meat?\nB: Turn it over every five minutes.",
+            hint: "over"
+        },
+        { 
+            korean: "저는 자녀가 두 명 있어요.", 
+            english: "I have two kids.",
+            example: "A: Do you have a family?\nB: Yes, I have two kids.",
+            hint: "kids"
+        },
+        { 
+            korean: "저는 결혼했어요.", 
+            english: "I'm married.",
+            example: "A: Are you single?\nB: No, I'm married.",
+            hint: "married"
+        },
+        { 
+            korean: "저는 싱글이에요.", 
+            english: "I'm single.",
+            example: "A: Are you married?\nB: No, I'm single.",
+            hint: "single"
+        },
+        { 
+            korean: "현금으로 하시겠어요, 카드로 하시겠어요?", 
+            english: "Cash or card?",
+            example: "A: Your total is 10 dollars.\nB: Okay. Cash or card?",
+            hint: "or"
+        },
+        { 
+            korean: "많이 보고 싶었어.", 
+            english: "I missed you a lot.",
+            example: "A: It's so good to see you!\nB: I missed you a lot.",
+            hint: "missed"
+        },
+        { 
+            korean: "(쇼핑 중에) 새거 있나요?", 
+            english: "Can I get a new one?",
+            example: "A: Do you have this in a different size?\nB: Can I get a new one?",
+            hint: "new"
+        },
+        { 
+            korean: "날 그냥 혼자 내버려 둬.", 
+            english: "Just leave me alone.",
+            example: "A: Don't you want to talk?\nB: No, thanks. Just leave me alone.",
+            hint: "alone"
+        },
+        { 
+            korean: "너 내일 바쁘니?", 
+            english: "Are you busy tomorrow?",
+            example: "A: Hey, are you free tomorrow?\nB: I'm not sure. Are you busy tomorrow?",
+            hint: "busy"
+        },
+        {
+            korean: "아니, 하루 종일 한가해.",
+            english: "No, I'm free all day.",
+            example: "A: Are you busy this weekend?\nB: No, I'm free all day. Let's hang out.",
+            hint: "free"
+        },
+        {
+            korean: "그럼 우리 같이 놀자.",
+            english: "Let's hang out then.",
+            example: "A: I'm free after work today.\nB: Let's hang out then.",
+            hint: "hang out"
+        },
+        {
+            korean: "너 별일 없지?",
+            english: "What's new with you?",
+            example: "A: It's been a while! What's new with you?\nB: Not much, you?",
+            hint: "new"
+        },
+        {
+            korean: "별일 없어!",
+            english: "Not much!",
+            example: "A: What's new with you?\nB: Not much! I'm just busy with work.",
+            hint: "much"
+        },
+        {
+            korean: "무슨 일 하세요?",
+            english: "What do you do?",
+            example: "A: It was nice to meet you. What do you do?\nB: I'm a student.",
+            hint: "do"
+        },
+        {
+            korean: "저는 영업직에 있어요.",
+            english: "I work in sales.",
+            example: "A: What do you do?\nB: I work in sales.",
+            hint: "sales"
+        },
+        {
+            korean: "저는 IT쪽 일을 하고 있어요.",
+            english: "I work in IT.",
+            example: "A: What's your job?\nB: I work in IT.",
+            hint: "IT"
+        },
+        {
+            korean: "여기서 먼가요?",
+            english: "Is it far from here?",
+            example: "A: I'm going to the mall.\nB: Is it far from here?",
+            hint: "far"
+        },
+        {
+            korean: "재밌네.",
+            english: "That's really interesting.",
+            example: "A: I'm starting a new hobby, learning to play the guitar.\nB: That's really interesting.",
+            hint: "interesting"
+        },
+        {
+            korean: "난 기억을 잘 못해.",
+            english: "I have a bad memory.",
+            example: "A: Do you remember what we talked about last week?\nB: Sorry, I have a bad memory.",
+            hint: "memory"
+        },
+        {
+            korean: "내일은 어때?",
+            english: "How about tomorrow?",
+            example: "A: I can't meet today.\nB: How about tomorrow?",
+            hint: "tomorrow"
+        },
+        {
+            korean: "도움이 필요하세요?",
+            english: "Do you need any help?",
+            example: "A: (struggling to carry bags)\nB: Do you need any help?",
+            hint: "help"
+        },
+        {
+            korean: "밖에 비가 내려.",
+            english: "It's raining outside.",
+            example: "A: We should leave now.\nB: Oh, no. It's raining outside.",
+            hint: "raining"
+        },
+        {
+            korean: "얘기 좀 할 수 있을까?",
+            english: "Can we talk?",
+            example: "A: You look sad. Can we talk?\nB: Sure.",
+            hint: "talk"
+        },
+        {
+            korean: "좋은 시간 보내.",
+            english: "Have a great time.",
+            example: "A: I'm going to the party.\nB: Have a great time.",
+            hint: "great"
+        },
+        {
+            korean: "추가 요금이 있나요?",
+            english: "Is there an extra charge?",
+            example: "A: I want to add some extra cheese.\nB: Is there an extra charge?",
+            hint: "charge"
+        },
+        {
+            korean: "그냥 둘러보는 중이에요.",
+            english: "I'm just looking around.",
+            example: "A: Can I help you find something?\nB: No, thanks. I'm just looking around.",
+            hint: "looking"
+        },
+        {
+            korean: "뭐로 할래? / 뭐 먹을래?",
+            english: "What would you like?",
+            example: "A: What would you like to order?\nB: I'll have the pasta.",
+            hint: "like"
+        },
+        {
+            korean: "너 옷 예쁘다/멋지다.",
+            english: "I like your outfit.",
+            example: "A: I'm going to a party tonight.\nB: I like your outfit. It's really cool.",
+            hint: "outfit"
+        },
+        {
+            korean: "차에 기름이 다 떨어졌어.",
+            english: "My car ran out of gas.",
+            example: "A: Why are we stopped here?\nB: My car ran out of gas.",
+            hint: "ran out"
+        },
+        {
+            korean: "리필 해드릴까요?",
+            english: "Do you want a refill?",
+            example: "A: Your soda is empty. Do you want a refill?\nB: Yes, please.",
+            hint: "refill"
+        },
+        {
+            korean: "5시가 다 돼가.",
+            english: "It's almost five o'clock.",
+            example: "A: What time is it?\nB: It's almost five o'clock. We should go soon.",
+            hint: "almost"
+        },
+        {
+            korean: "(그 일은) 힘들어요.",
+            english: "It's challenging.",
+            example: "A: How is your new job?\nB: It's challenging, but I like it.",
+            hint: "challenging"
+        },
+        {
+            korean: "내가 너한테 말 안 했니?",
+            english: "Didn't I tell you?",
+            example: "A: We're going on a trip next week!\nB: Didn't I tell you? I thought you knew.",
+            hint: "tell"
+        },
+        {
+            korean: "나는 사진이 잘 안 받아요.",
+            english: "I look terrible in pictures.",
+            example: "A: Let's take a selfie!\nB: No, thanks. I look terrible in pictures.",
+            hint: "terrible"
+        },
+        {
+            korean: "너 그거 다 했니?",
+            english: "Are you done with that?",
+            example: "A: Can I borrow your book?\nB: Are you done with that?",
+            hint: "done"
+        },
+        {
+            korean: "둘이 아는 사이니?",
+            english: "You two know each other?",
+            example: "A: (introduces two people)\nB: Oh! You two know each other?",
+            hint: "know"
+        },
+        {
+            korean: "방해해서 죄송해요.",
+            english: "I'm sorry to bother you.",
+            example: "A: (walks up to someone)\nB: I'm sorry to bother you, but can I ask a question?",
+            hint: "bother"
+        },
+        {
+            korean: "어떤 게 더 좋아?",
+            english: "Which one do you prefer?",
+            example: "A: Do you want pizza or pasta?\nB: Which one do you prefer?",
+            hint: "prefer"
+        },
+        {
+            korean: "저녁 같이 먹자.",
+            english: "Let's have dinner together.",
+            example: "A: I'm starving. Let's have dinner together.",
+            hint: "together"
+        },
+        {
+            korean: "커피 한잔 마시자.",
+            english: "Let's get some coffee.",
+            example: "A: I'm so sleepy.\nB: Let's get some coffee.",
+            hint: "coffee"
+        },
+        {
+            korean: "무슨 일이야?",
+            english: "What happened?",
+            example: "A: (crying)\nB: What happened? Are you okay?",
+            hint: "happened"
+        },
+        {
+            korean: "여기서 사진 찍어도 되나요?",
+            english: "Can I take photos here?",
+            example: "A: (at a museum)\nB: Can I take photos here?",
+            hint: "photos"
+        },
+        {
+            korean: "(식당에서) 뭐 드릴까요?",
+            english: "What can I get you?",
+            example: "A: (waiter speaking to customer)\nB: What can I get you?",
+            hint: "get"
+        },
+        {
+            korean: "이 셔츠는 아무 데나 잘 어울려.",
+            english: "This shirt goes with everything.",
+            example: "A: I don't know what to wear with this shirt.\nB: Don't worry, this shirt goes with everything.",
+            hint: "goes with"
+        },
+        {
+            korean: "이거 너무 달달하다!",
+            english: "This is so sweet!",
+            example: "A: Have a taste of this cake.\nB: Oh, this is so sweet!",
+            hint: "sweet"
+        },
+        {
+            korean: "난 새로운 곳에 가보고 싶어.",
+            english: "I want to visit new places.",
+            example: "A: What do you want to do on your vacation?\nB: I want to visit new places.",
+            hint: "visit"
+        },
+        {
+            korean: "메뉴판 좀 주시겠어요?",
+            english: "Can I have a menu?",
+            example: "A: (at a restaurant)\nB: Can I have a menu, please?",
+            hint: "menu"
+        },
+        {
+            korean: "(일이) 지루해.",
+            english: "It's boring.",
+            example: "A: How was the movie?\nB: It's boring. I fell asleep.",
+            hint: "boring"
+        },
+        {
+            korean: "나 감기 걸린 것 같아.",
+            english: "I think I have a cold.",
+            example: "A: Why are you coughing so much?\nB: I think I have a cold.",
+            hint: "cold"
+        },
+        {
+            korean: "나도 정말 그거 하고 싶어.",
+            english: "I'd love to do that.",
+            example: "A: We're going hiking this weekend. Want to join?\nB: I'd love to do that.",
+            hint: "love"
+        },
+        {
+            korean: "너 멋지다!",
+            english: "You look great!",
+            example: "A: I got a new haircut.\nB: You look great! It suits you.",
+            hint: "great"
+        },
+        {
+            korean: "뒤로 물러서 주세요.",
+            english: "Step back, please.",
+            example: "A: (crowd pushing forward)\nB: Step back, please.",
+            hint: "step"
+        },
+        {
+            korean: "TV에서 뭐 하니? / 무슨 방송 하니?",
+            english: "What's on TV?",
+            example: "A: I'm bored. What's on TV?\nB: There's a baseball game.",
+            hint: "TV"
+        },
+        {
+            korean: "언제든지 들르세요.",
+            english: "Feel free to drop by.",
+            example: "A: I might be in your neighborhood next week.\nB: Feel free to drop by.",
+            hint: "drop by"
+        },
+        {
+            korean: "우리 어떻게 해야 하지?",
+            english: "What should we do?",
+            example: "A: The plan isn't working.\nB: What should we do now?",
+            hint: "do"
+        },
+        {
+            korean: "저녁에 외식하자.",
+            english: "Let's go out for dinner.",
+            example: "A: I'm too tired to cook.\nB: Let's go out for dinner.",
+            hint: "dinner"
+        },
+        {
+            korean: "주문을 변경해도 되나요?",
+            english: "Can I change my order?",
+            example: "A: I ordered a burger, but I want a salad now.\nB: Can I change my order?",
+            hint: "change"
+        },
+        {
+            korean: "콧물이 나와요.",
+            english: "I have a runny nose.",
+            example: "A: Do you have a cold?\nB: Yes, I have a runny nose.",
+            hint: "runny nose"
+        },
+        {
+            korean: "한번 생각해 볼게요.",
+            english: "Let me think about it.",
+            example: "A: Do you want to join our study group?\nB: Let me think about it.",
+            hint: "think"
+        },
+        {
+            korean: "무엇을 하고 싶으세요?",
+            english: "What do you like to do?",
+            example: "A: It's Saturday. What do you like to do?\nB: I like to read books.",
+            hint: "like"
+        },
+        {
+            korean: "뭐 필요한 거 있니?",
+            english: "Do you need anything?",
+            example: "A: I'm going to the store.\nB: Do you need anything?",
+            hint: "anything"
+        },
+        {
+            korean: "라떼 한 잔 주세요.",
+            english: "I'll have a Latte.",
+            example: "A: What can I get you?\nB: I'll have a Latte.",
+            hint: "have"
+        },
+        {
+            korean: "들어와.",
+            english: "Come in.",
+            example: "A: (knocking on door)\nB: Come in.",
+            hint: "in"
+        },
+        {
+            korean: "잘난 척 좀 그만해.",
+            english: "Stop showing off.",
+            example: "A: I'm the best at this game.\nB: Stop showing off.",
+            hint: "off"
+        },
+        {
+            korean: "나는 단것을 좋아하지 않아.",
+            english: "I don't like sweets.",
+            example: "A: Want some chocolate?\nB: No, thanks. I don't like sweets.",
+            hint: "sweets"
+        },
+        {
+            korean: "여기 정말 좋다.",
+            english: "I love this place.",
+            example: "A: This cafe is so cozy.\nB: I love this place.",
+            hint: "love"
+        },
+        {
+            korean: "나는 오늘 회의가 있어.",
+            english: "I have a meeting today.",
+            example: "A: Can we talk later?\nB: I can't. I have a meeting today.",
+            hint: "meeting"
+        },
+        {
+            korean: "계산서 좀 주시겠어요?",
+            english: "Can I have the bill?",
+            example: "A: The food was great.\nB: Can I have the bill, please?",
+            hint: "bill"
+        },
+        {
+            korean: "나중에 다시 올게요.",
+            english: "I'll come back later.",
+            example: "A: We're closing soon.\nB: Okay, I'll come back later.",
+            hint: "later"
+        },
+        {
+            korean: "너 오늘 멋져 보여.",
+            english: "You look great today.",
+            example: "A: I'm feeling good.\nB: You look great today.",
+            hint: "look great"
+        },
+        {
+            korean: "얼마나 걸릴까요?",
+            english: "How long will it take?",
+            example: "A: How long will it take to get there?\nB: About 20 minutes.",
+            hint: "take"
+        },
+        {
+            korean: "우리 구면인가요?",
+            english: "Have we met before?",
+            example: "A: You look familiar.\nB: Have we met before?",
+            hint: "met"
+        },
+        {
+            korean: "시간이 부족해요.",
+            english: "I don't have enough time.",
+            example: "A: Can you finish this report?\nB: I don't have enough time.",
+            hint: "enough"
+        },
+        {
+            korean: "주말 잘 보내.",
+            english: "Have a good weekend!",
+            example: "A: See you on Monday.\nB: Have a good weekend!",
+            hint: "weekend"
+        },
+        {
+            korean: "좋은 하루 되세요.",
+            english: "Have a good day.",
+            example: "A: Goodbye.\nB: Have a good day.",
+            hint: "day"
+        },
+        {
+            korean: "너 올 거니?",
+            english: "Are you going to come?",
+            example: "A: We're having a party. Are you going to come?\nB: Yes, I am.",
+            hint: "going"
+        },
+        {
+            korean: "뭐가 문제예요?",
+            english: "What's wrong with you?",
+            example: "A: (looking upset)\nB: What's wrong with you? Did something happen?",
+            hint: "wrong"
+        },
+        {
+            korean: "커피 좀 주시겠어요?",
+            english: "Can I have a coffee?",
+            example: "A: I'm tired.\nB: Can I have a coffee, please?",
+            hint: "have"
+        },
+        {
+            korean: "당신은 아침형 인간입니까?",
+            english: "Are you a morning person?",
+            example: "A: I'm always tired in the morning.\nB: Are you a morning person?",
+            hint: "person"
+        },
+        {
+            korean: "난 채식만 해요.",
+            english: "I'm a vegetarian.",
+            example: "A: What do you want to eat?\nB: I'm a vegetarian, so let's find a place with salads.",
+            hint: "vegetarian"
+        },
+        {
+            korean: "나는 휴가를 갈 거예요.",
+            english: "I'm going on vacation.",
+            example: "A: What are your plans for the summer?\nB: I'm going on vacation next month.",
+            hint: "vacation"
+        },
+        {
+            korean: "괜찮니? 괜찮으세요?",
+            english: "Are you alright?",
+            example: "A: (falls down)\nB: Are you alright? Are you hurt?",
+            hint: "alright"
+        },
+        {
+            korean: "난 너무 피곤해.",
+            english: "I'm so tired.",
+            example: "A: You look exhausted.\nB: I'm so tired. I couldn't sleep.",
+            hint: "tired"
+        },
+        {
+            korean: "너 잘하고 있어.",
+            english: "You're doing a great job.",
+            example: "A: I'm trying to learn a new skill.\nB: You're doing a great job!",
+            hint: "job"
+        },
+        {
+            korean: "한번 먹어볼래?",
+            english: "Want to try some?",
+            example: "A: I made some cookies.\nB: Want to try some?",
+            hint: "try"
+        },
+        {
+            korean: "생각해 볼게.",
+            english: "I'll think about it.",
+            example: "A: How about a trip to Europe?\nB: I'll think about it.",
+            hint: "think"
+        },
+        {
+            korean: "여기 있어요.",
+            english: "Here you go.",
+            example: "A: Can I have a pen?\nB: Here you go.",
+            hint: "here"
+        },
+        {
+            korean: "여기 자리 있습니까?",
+            english: "Is this seat taken?",
+            example: "A: (at a coffee shop)\nB: Is this seat taken?",
+            hint: "taken"
+        },
+        {
+            korean: "전혀 관심이 없어요.",
+            english: "I'm not interested at all.",
+            example: "A: You should try this new game!\nB: I'm not interested at all.",
+            hint: "interested"
+        },
+        {
+            korean: "지금 이 순간을 즐기자.",
+            english: "Let's enjoy this moment.",
+            example: "A: We should take a picture.\nB: Yes, let's enjoy this moment.",
+            hint: "enjoy"
+        },
+        {
+            korean: "한숨도 못 잤어.",
+            english: "I couldn't sleep a wink.",
+            example: "A: You look tired.\nB: I couldn't sleep a wink last night.",
+            hint: "wink"
+        },
+        {
+            korean: "정말 즐거웠어요.",
+            english: "I had a great time.",
+            example: "A: Thanks for coming.\nB: I had a great time.",
+            hint: "time"
+        },
+        {
+            korean: "그거 확실한 거니?",
+            english: "Are you sure about that?",
+            example: "A: I think the exam is tomorrow.\nB: Are you sure about that?",
+            hint: "sure"
+        },
+        {
+            korean: "누가 그러던가요?",
+            english: "Who told you that?",
+            example: "A: I heard you're moving.\nB: Who told you that?",
+            hint: "told"
+        },
+        {
+            korean: "여기서 드실 건가요? 가져가실 건가요?",
+            english: "For here or to go?",
+            example: "A: (at a coffee shop)\nB: For here or to go?",
+            hint: "to go"
+        },
+        {
+            korean: "그는 다시 오지 않을 거야.",
+            english: "He's not coming back.",
+            example: "A: Do you think he'll return?\nB: He's not coming back.",
+            hint: "back"
+        },
+        {
+            korean: "나 그와 헤어졌어.",
+            english: "I broke up with him.",
+            example: "A: How's your relationship with him?\nB: I broke up with him.",
+            hint: "broke up"
+        },
+        {
+            korean: "난 올빼미족이 아니야.",
+            english: "I'm not a night owl.",
+            example: "A: Do you want to study late?\nB: I can't. I'm not a night owl.",
+            hint: "owl"
+        },
+        {
+            korean: "난 셀카 찍는 걸 좋아해.",
+            english: "I enjoy taking selfies.",
+            example: "A: Why do you have so many photos of yourself?\nB: I don't know, I just enjoy taking selfies.",
+            hint: "selfies"
+        },
+        {
+            korean: "포장해 주실 수 있을까요?",
+            english: "Can I have that to go?",
+            example: "A: (at a restaurant)\nB: Can I have that to go?",
+            hint: "to go"
+        },
+        {
+            korean: "난 휴식이 필요해.",
+            english: "I need a break.",
+            example: "A: You've been working all day.\nB: I know, I need a break.",
+            hint: "break"
+        },
+        {
+            korean: "괜찮아요, 저는 사양할게요.",
+            english: "No, thanks. I will pass.",
+            example: "A: Would you like to join us for dinner?\nB: No, thanks. I will pass.",
+            hint: "pass"
+        },
+        {
+            korean: "난 상관없어.",
+            english: "I don't care.",
+            example: "A: Do you want to watch the movie or the show?\nB: I don't care. It's up to you.",
+            hint: "care"
+        },
+        {
+            korean: "너 지금 바쁘니?",
+            english: "Are you busy right now?",
+            example: "A: Hey. Are you busy right now?\nB: A little. Can I call you back?",
+            hint: "busy"
+        },
+        {
+            korean: "명심할게요.",
+            english: "I'll keep that in mind.",
+            example: "A: You should practice more often.\nB: I'll keep that in mind.",
+            hint: "mind"
+        },
+        {
+            korean: "너 생일이니?",
+            english: "Is it your birthday?",
+            example: "A: Why is everyone singing to you?\nB: It's my birthday.",
+            hint: "birthday"
+        },
+        {
+            korean: "오고 있니?",
+            english: "Are you coming?",
+            example: "A: We're all waiting for you.\nB: Are you coming?",
+            hint: "coming"
+        },
+        {
+            korean: "이걸로 할게요.",
+            english: "I'll take this.",
+            example: "A: Are you ready to order?\nB: Yes, I'll take this.",
+            hint: "take"
+        },
+        {
+            korean: "저도 같은 걸로 할게요.",
+            english: "I'll have the same.",
+            example: "A: I'll have the pasta.\nB: I'll have the same.",
+            hint: "same"
+        },
+        {
+            korean: "지금 체크인할 수 있나요?",
+            english: "Can I check in now?",
+            example: "A: (at a hotel)\nB: Can I check in now?",
+            hint: "check in"
+        },
+        {
+            korean: "핸드폰 챙겼니?",
+            english: "Do you have your cellphone?",
+            example: "A: We're leaving now. Do you have your cellphone?\nB: Yes, I do.",
+            hint: "cellphone"
+        },
+        {
+            korean: "나는 매일 운동을 해요.",
+            english: "I work out every day.",
+            example: "A: You look so fit. How do you do it?\nB: I work out every day.",
+            hint: "work out"
+        },
+        {
+            korean: "5달러입니다.",
+            english: "That'll be $5.",
+            example: "A: How much is this?\nB: That'll be $5.",
+            hint: "$5"
+        },
+        {
+            korean: "언제 헤어졌어?",
+            english: "When did you break up?",
+            example: "A: I heard you're single now.\nB: When did you break up?",
+            hint: "break up"
+        },
+        {
+            korean: "난 늦잠 자는 걸 좋아해.",
+            english: "I love sleeping in.",
+            example: "A: Do you wake up early on weekends?\nB: No, I love sleeping in.",
+            hint: "sleeping"
+        },
+        {
+            korean: "멋진 사진이네요!",
+            english: "That's a great photo!",
+            example: "A: (shows a picture)\nB: That's a great photo! It's beautiful.",
+            hint: "photo"
+        },
+        {
+            korean: "저는 두 명의 자매가 있어요.",
+            english: "I have two sisters.",
+            example: "A: Do you have any siblings?\nB: Yes, I have two sisters.",
+            hint: "sisters"
+        },
+        {
+            korean: "나 정말 스트레스받아.",
+            english: "I'm feeling stressed.",
+            example: "A: How are you?\nB: I'm feeling stressed about work.",
+            hint: "stressed"
+        },
+        {
+            korean: "그거 좋겠네요.",
+            english: "That would be nice.",
+            example: "A: How about we go for a walk?\nB: That would be nice.",
+            hint: "nice"
+        },
+        {
+            korean: "난 시간이 좀 더 필요해.",
+            english: "I need more time.",
+            example: "A: Are you ready to go?\nB: I need more time. Please wait.",
+            hint: "time"
+        },
+        {
+            korean: "너는?",
+            english: "How about you?",
+            example: "A: I like summer. How about you?\nB: I prefer spring.",
+            hint: "you"
+        },
+        {
+            korean: "온몸이 쑤시고 아파.",
+            english: "I ache all over.",
+            example: "A: You look sore.\nB: I worked out too hard. I ache all over.",
+            hint: "ache"
+        },
+        {
+            korean: "서두를 필요 없어요.",
+            english: "There's no need to hurry.",
+            example: "A: We're running late.\nB: There's no need to hurry. We have plenty of time.",
+            hint: "hurry"
+        },
+        {
+            korean: "오늘 밤에 시간 있으세요?",
+            english: "Are you free tonight?",
+            example: "A: Are you free tonight?\nB: Yes, I am. Why?",
+            hint: "free"
+        },
+        {
+            korean: "이번 주말에 시간 괜찮니?",
+            english: "Are you free this weekend?",
+            example: "A: I'm throwing a party. Are you free this weekend?\nB: I'm busy, sorry.",
+            hint: "weekend"
+        },
+        {
+            korean: "잘됐다. / 정말 축하해.",
+            english: "I'm so happy for you.",
+            example: "A: I got a promotion!\nB: That's awesome! I'm so happy for you.",
+            hint: "happy"
+        },
+        {
+            korean: "진짜 미치겠네.",
+            english: "I am freaking out!",
+            example: "A: The exam is today!\nB: I am freaking out!",
+            hint: "out"
+        },
+        {
+            korean: "허리가 너무 아파요.",
+            english: "My back is killing me.",
+            example: "A: You look uncomfortable. What's wrong?\nB: My back is killing me.",
+            hint: "back"
+        },
+        {
+            korean: "지금 몇 시인가요?",
+            english: "What time is it now?",
+            example: "A: We've been here for a while.\nB: What time is it now?",
+            hint: "time"
+        },
+        {
+            korean: "여기 앉아도 될까요?",
+            english: "Do you mind if I sit here?",
+            example: "A: (at a table)\nB: Do you mind if I sit here?",
+            hint: "mind"
+        },
+        {
+            korean: "내가 전원 꺼 놨어.",
+            english: "I turned it off.",
+            example: "A: Why is the TV off?\nB: I turned it off.",
+            hint: "off"
+        },
+        {
+            korean: "방금 이사 왔어요.",
+            english: "I just moved in.",
+            example: "A: Are you new to the neighborhood?\nB: Yes, I just moved in.",
+            hint: "moved in"
+        },
+        {
+            korean: "난 봄이 좋아.",
+            english: "I enjoy spring.",
+            example: "A: What's your favorite season?\nB: I enjoy spring the most.",
+            hint: "enjoy"
+        },
+        {
+            korean: "저는 맏이예요.",
+            english: "I'm the oldest.",
+            example: "A: Are you the youngest in your family?\nB: No, I'm the oldest.",
+            hint: "oldest"
+        },
+        {
+            korean: "그건 미안하게 됐어.",
+            english: "I'm sorry about that.",
+            example: "A: I lost your jacket.\nB: I'm sorry about that.",
+            hint: "sorry"
+        },
+        {
+            korean: "그건 중요하지 않아요.",
+            english: "It doesn't matter.",
+            example: "A: I'm sorry I'm late.\nB: It doesn't matter. We just started.",
+            hint: "matter"
+        },
+        {
+            korean: "난 정말 심심해.",
+            english: "I'm really bored.",
+            example: "A: There's nothing to do.\nB: I'm really bored.",
+            hint: "bored"
+        },
+        {
+            korean: "너무 느끼해요.",
+            english: "It's too greasy.",
+            example: "A: How is the fried chicken?\nB: It's too greasy.",
+            hint: "greasy"
+        },
+        {
+            korean: "무슨 일이야? / 뭐가 문제지?",
+            english: "What's the matter?",
+            example: "A: (looks sad)\nB: What's the matter?",
+            hint: "matter"
+        },
+        {
+            korean: "너 거기 가 봤니?",
+            english: "Have you been there?",
+            example: "A: I went to Europe last month.\nB: Have you been there?",
+            hint: "been"
+        },
+        {
+            korean: "몇 번 가 봤어.",
+            english: "I've been there a few.",
+            example: "A: Do you know that restaurant?\nB: I've been there a few times.",
+            hint: "few"
+        },
+        {
+            korean: "잘 안 들려.",
+            english: "I can't hear you.",
+            example: "A: (speaks quietly)\nB: Sorry, I can't hear you.",
+            hint: "hear"
+        },
+        {
+            korean: "내가 늦은 거니?",
+            english: "Am I late?",
+            example: "A: (arrives late)\nB: Am I late?",
+            hint: "late"
+        },
+        {
+            korean: "진짜야? 실화야?",
+            english: "Are you serious?",
+            example: "A: I won the lottery!\nB: Are you serious?",
+            hint: "serious"
+        },
+        {
+            korean: "현금으로 계산할게요.",
+            english: "I'll pay in cash.",
+            example: "A: How would you like to pay?\nB: I'll pay in cash.",
+            hint: "cash"
+        },
+        {
+            korean: "감기에 걸렸어요.",
+            english: "I got a cold.",
+            example: "A: Why are you coughing?\nB: I got a cold.",
+            hint: "cold"
+        },
+        {
+            korean: "선택의 여지가 없어요.",
+            english: "I have no choice.",
+            example: "A: Why are you doing that?\nB: I have no choice.",
+            hint: "choice"
+        },
+        {
+            korean: "만나서 반가웠어요.",
+            english: "It was nice meeting you.",
+            example: "A: (at the end of a meeting)\nB: It was nice meeting you.",
+            hint: "meeting"
+        },
+        {
+            korean: "나 다이어트 중이야.",
+            english: "I'm on a diet.",
+            example: "A: Do you want some cake?\nB: No, thanks. I'm on a diet.",
+            hint: "diet"
+        },
+        {
+            korean: "휴대폰을 꺼 주세요.",
+            english: "Please turn off your phone.",
+            example: "A: (at a movie theater)\nB: Please turn off your phone.",
+            hint: "phone"
+        },
+        {
+            korean: "나 지금 집이야.",
+            english: "I'm at home.",
+            example: "A: Where are you?\nB: I'm at home, relaxing.",
+            hint: "home"
+        },
+        {
+            korean: "산책하러 갑시다.",
+            english: "Let's go for a walk.",
+            example: "A: The weather is so nice.\nB: Let's go for a walk.",
+            hint: "walk"
+        },
+        {
+            korean: "나는 화창한 날이 좋아.",
+            english: "I like sunny days.",
+            example: "A: What kind of weather do you like?\nB: I like sunny days.",
+            hint: "sunny"
+        },
+        {
+            korean: "친구 좋다는 게 뭐니?",
+            english: "What are friends for?",
+            example: "A: Thanks for helping me move.\nB: Don't mention it. What are friends for?",
+            hint: "for"
+        },
+        {
+            korean: "그곳에 어떻게 가죠?",
+            english: "How can I get there?",
+            example: "A: I need to go to the post office.\nB: How can I get there?",
+            hint: "get"
+        },
+        {
+            korean: "내가 나중에 알려 줄게.",
+            english: "I'll let you know later.",
+            example: "A: When will you be ready?\nB: I'll let you know later.",
+            hint: "know"
+        },
+        {
+            korean: "넌 정말 좋은 친구야.",
+            english: "You're such a good friend.",
+            example: "A: Thanks for always being there for me.\nB: You're such a good friend.",
+            hint: "good friend"
+        },
+        {
+            korean: "내가 너와 함께 있어. / 나는 네 편이야.",
+            english: "I'm with you.",
+            example: "A: I feel like I'm alone in this.\nB: Don't worry, I'm with you.",
+            hint: "with"
+        },
+        {
+            korean: "신분증 좀 볼 수 있을까요?",
+            english: "Can I see your ID?",
+            example: "A: (at a bar)\nB: Can I see your ID?",
+            hint: "ID"
+        },
+        {
+            korean: "온라인으로 예매했어요.",
+            english: "I have booked online.",
+            example: "A: Do you have a ticket?\nB: Yes, I have booked online.",
+            hint: "booked"
+        },
+        {
+            korean: "잘 잤니?",
+            english: "Did you sleep well?",
+            example: "A: Good morning!\nB: Did you sleep well?",
+            hint: "sleep"
+        },
+        {
+            korean: "우리 간식 좀 먹자.",
+            english: "Let's grab a snack.",
+            example: "A: I'm a little hungry.\nB: Let's grab a snack.",
+            hint: "grab"
+        },
+        {
+            korean: "나는 운이 좋았어.",
+            english: "I was lucky.",
+            example: "A: How did you find that?\nB: I was lucky. It was on the street.",
+            hint: "lucky"
+        },
+        {
+            korean: "미안해요.",
+            english: "Sorry about that.",
+            example: "A: My mistake.\nB: Sorry about that.",
+            hint: "sorry"
+        },
+        {
+            korean: "저는 재택근무를 해요.",
+            english: "I work from home.",
+            example: "A: Do you go to the office every day?\nB: No, I work from home.",
+            hint: "from home"
+        },
+        {
+            korean: "왜 나한테 말 안 했어?",
+            english: "Why didn't you tell me?",
+            example: "A: I'm going on a trip next week.\nB: Why didn't you tell me? I wanted to go with you.",
+            hint: "tell"
+        },
+        {
+            korean: "여기서 나가자.",
+            english: "Let's get out of here.",
+            example: "A: It's too noisy here.\nB: Let's get out of here.",
+            hint: "out of here"
+        },
+        {
+            korean: "내가 어디로 가면 되지?",
+            english: "Where should I go?",
+            example: "A: I'm lost.\nB: Where should I go?",
+            hint: "go"
+        },
+        {
+            korean: "바람 좀 쐬러 가자.",
+            english: "Let's get some air.",
+            example: "A: It's stuffy in here.\nB: Let's get some air.",
+            hint: "air"
+        },
+        {
+            korean: "혹시 알레르기 있으세요?",
+            english: "Do you have any allergies?",
+            example: "A: (at a restaurant)\nB: Do you have any allergies?",
+            hint: "allergies"
+        },
+        {
+            korean: "와이파이에 접속이 안 돼.",
+            english: "I can't get Wi-Fi.",
+            example: "A: Why can't you get online?\nB: I can't get Wi-Fi here.",
+            hint: "Wi-Fi"
+        },
+        {
+            korean: "장난하니?",
+            english: "Are you kidding me?",
+            example: "A: I ate your last cookie.\nB: Are you kidding me?",
+            hint: "kidding"
+        },
+        {
+            korean: "좀 쉬어.",
+            english: "Get some rest.",
+            example: "A: You look exhausted.\nB: You should get some rest.",
+            hint: "rest"
+        },
+        {
+            korean: "휴대폰 충전을 할 수 있나요?",
+            english: "Can I charge my phone?",
+            example: "A: (at a cafe)\nB: Can I charge my phone here?",
+            hint: "charge"
+        },
+        {
+            korean: "연락하고 지내자.",
+            english: "Let's keep in touch.",
+            example: "A: It was great to see you again.\nB: Let's keep in touch.",
+            hint: "touch"
+        },
+        {
+            korean: "얘기는 하지 말자.",
+            english: "Let's not talk about it.",
+            example: "A: So, about what happened...\nB: Let's not talk about it.",
+            hint: "talk"
+        },
+        {
+            korean: "저녁은 내가 쓸게.",
+            english: "Dinner is on me.",
+            example: "A: Thanks for the great evening.\nB: Dinner is on me.",
+            hint: "on me"
+        },
+        {
+            korean: "스테이크를 뒤집어.",
+            english: "Turn the steak over.",
+            example: "A: My steak is burning.\nB: You should turn the steak over.",
+            hint: "over"
+        },
+        {
+            korean: "난 소설을 아주 좋아해.",
+            english: "I'm a fan of novels.",
+            example: "A: What do you like to read?\nB: I'm a fan of novels.",
+            hint: "fan"
+        },
+        {
+            korean: "알겠어요.",
+            english: "I understand.",
+            example: "A: The rules are simple. Do you get it?\nB: I understand.",
+            hint: "understand"
+        },
+        {
+            korean: "당신의 직업이 마음에 드세요?",
+            english: "Do you like your job?",
+            example: "A: You're always busy. Do you like your job?\nB: It's okay.",
+            hint: "job"
+        },
+        {
+            korean: "날 탓 하지 마.",
+            english: "Don't blame me.",
+            example: "A: This is your fault!\nB: Don't blame me.",
+            hint: "blame"
+        },
+        {
+            korean: "나는 영화보는 걸 좋아해.",
+            english: "I love watching films.",
+            example: "A: What do you do for fun?\nB: I love watching films.",
+            hint: "watching"
+        },
+        {
+            korean: "나는 유럽에 가 봤어.",
+            english: "I've been to Europe.",
+            example: "A: Where have you traveled?\nB: I've been to Europe a few times.",
+            hint: "been"
+        },
+        {
+            korean: "이건 베스트셀러야.",
+            english: "It's a bestseller.",
+            example: "A: I want to read a good book. Any recommendations?\nB: This one is a bestseller.",
+            hint: "bestseller"
+        },
+        {
+            korean: "너 걔네랑 친하니?",
+            english: "Are you close to them?",
+            example: "A: I saw you with some people at the park.\nB: Yeah, are you close to them?",
+            hint: "close"
+        },
+        {
+            korean: "응, 우리는 잘 지내/친해.",
+            english: "Yes, we get along well.",
+            example: "A: Are you close to your coworkers?\nB: Yes, we get along well.",
+            hint: "get along"
+        },
+        {
+            korean: "나는 락음악에 빠져있어.",
+            english: "I'm into rock music.",
+            example: "A: What kind of music do you like?\nB: I'm into rock music these days.",
+            hint: "into"
+        },
+        {
+            korean: "아이스크림은 정말 못 참겠어.",
+            english: "Ice cream is my weakness.",
+            example: "A: I can't believe you ate the whole tub of ice cream.\nB: I know. Ice cream is my weakness.",
+            hint: "weakness"
+        },
+        {
+            korean: "난 피곤하지 않아.",
+            english: "I'm not tired.",
+            example: "A: You look sleepy. Go to bed.\nB: I'm not tired.",
+            hint: "tired"
+        },
+        {
+            korean: "나는 돈이 없어.",
+            english: "I don't have money.",
+            example: "A: Let's go shopping!\nB: I can't. I don't have money.",
+            hint: "money"
+        },
+        {
+            korean: "나는 혼자 사는 것을 좋아해.",
+            english: "I like living alone.",
+            example: "A: Do you have a roommate?\nB: No, I like living alone.",
+            hint: "living"
+        },
+        {
+            korean: "나중에 하자.",
+            english: "Let's do it later.",
+            example: "A: Let's finish this project now.\nB: I'm tired. Let's do it later.",
+            hint: "later"
+        },
+        {
+            korean: "이건 내 차례야.",
+            english: "It's my turn.",
+            example: "A: I want to play the game first.\nB: It's my turn.",
+            hint: "turn"
+        },
+        {
+            korean: "나도 마찬가지야.",
+            english: "Same here.",
+            example: "A: I'm so excited for the concert!\nB: Same here!",
+            hint: "same"
+        },
+        {
+            korean: "괜찮아요, 제가 할게요.",
+            english: "No, thanks. I'll do it.",
+            example: "A: Let me help you with that.\nB: No, thanks. I'll do it.",
+            hint: "do"
+        },
+        {
+            korean: "나는 집에 갈 거야.",
+            english: "I'm going home.",
+            example: "A: Where are you going?\nB: I'm going home now.",
+            hint: "going"
+        },
+        {
+            korean: "늦어서 미안해.",
+            english: "Sorry I'm late.",
+            example: "A: We've been waiting for you.\nB: Sorry I'm late. The bus was delayed.",
+            hint: "late"
+        },
+        {
+            korean: "나는 당신을 이해해.",
+            english: "I get you.",
+            example: "A: I'm just feeling a little down today.\nB: I get you. I feel the same sometimes.",
+            hint: "get"
+        },
+        {
+            korean: "나중에 얘기해.",
+            english: "Talk to you later.",
+            example: "A: I have to go now.\nB: Okay, talk to you later.",
+            hint: "talk"
+        },
+        {
+            korean: "걱정하지 마.",
+            english: "Don't worry about it.",
+            example: "A: I'm sorry for my mistake.\nB: Don't worry about it. It happens.",
+            hint: "worry"
+        },
+        {
+            korean: "나 바빠.",
+            english: "I'm tied up.",
+            example: "A: Can we meet for lunch?\nB: I'm tied up at work right now.",
+            hint: "tied up"
+        },
+        {
+            korean: "나는 정말 기뻐.",
+            english: "I'm so glad.",
+            example: "A: I passed the test!\nB: I'm so glad to hear that.",
+            hint: "glad"
+        },
+        {
+            korean: "어디야?",
+            english: "Where are you?",
+            example: "A: I'm waiting for you.\nB: Where are you? I'm at the wrong place.",
+            hint: "where"
+        },
+        {
+            korean: "나는 혼란스러워.",
+            english: "I'm confused.",
+            example: "A: What's the plan?\nB: I'm confused too. I don't know what to do.",
+            hint: "confused"
+        },
+        {
+            korean: "나는 동의하지 않아.",
+            english: "I don't agree.",
+            example: "A: We should do it this way.\nB: I don't agree. I think there's a better way.",
+            hint: "agree"
+        },
+        {
+            korean: "나는 피곤해.",
+            english: "I'm exhausted.",
+            example: "A: You look like you're about to fall asleep.\nB: I'm exhausted.",
+            hint: "exhausted"
+        },
+        {
+            korean: "네 생각은 어때?",
+            english: "What do you think?",
+            example: "A: I'm thinking of buying this jacket.\nB: What do you think?",
+            hint: "think"
+        },
+        {
+            korean: "나는 그것을 할 수 없어.",
+            english: "I can't do it.",
+            example: "A: Can you fix this?\nB: I'm sorry, I can't do it.",
+            hint: "do"
+        },
+        {
+            korean: "나중에 만나자.",
+            english: "See you later.",
+            example: "A: I'm leaving now. Bye!\nB: See you later.",
+            hint: "later"
+        },
+        {
+            korean: "나는 이것이 좋아.",
+            english: "I like this.",
+            example: "A: This song is great.\nB: I like this. It's my favorite.",
+            hint: "like"
+        },
+        {
+            korean: "나는 동의해.",
+            english: "I agree.",
+            example: "A: We should leave now.\nB: I agree.",
+            hint: "agree"
+        },
+        {
+            korean: "그것은 내 잘못이 아니야.",
+            english: "It's not my fault.",
+            example: "A: This happened because of you.\nB: It's not my fault.",
+            hint: "fault"
+        },
+        {
+            korean: "나는 내일 휴가야.",
+            english: "I'm off tomorrow.",
+            example: "A: Do you have to work tomorrow?\nB: No, I'm off tomorrow.",
+            hint: "off"
+        },
+        {
+            korean: "나는 배고파.",
+            english: "I'm starving.",
+            example: "A: I'm so hungry.\nB: I'm starving too. Let's eat.",
+            hint: "starving"
+        },
+        {
+            korean: "너 멋져 보여.",
+            english: "You look handsome.",
+            example: "A: I got a new suit.\nB: You look handsome.",
+            hint: "handsome"
+        },
+        {
+            korean: "이것 좀 봐.",
+            english: "Check this out.",
+            example: "A: (holds up a cool gadget)\nB: Check this out.",
+            hint: "check"
+        },
+        {
+            korean: "나한테 거짓말하지 마.",
+            english: "Don't lie to me.",
+            example: "A: I didn't do it!\nB: Don't lie to me.",
+            hint: "lie"
+        },
+        {
+            korean: "나는 그것을 믿을 수 없어.",
+            english: "I can't believe it.",
+            example: "A: We won the game!\nB: I can't believe it.",
+            hint: "believe"
+        },
+        {
+            korean: "나는 괜찮아.",
+            english: "I'm okay.",
+            example: "A: Are you feeling better?\nB: Yes, I'm okay.",
+            hint: "okay"
+        },
+        {
+            korean: "그것은 좋은 생각이야.",
+            english: "That's a good idea.",
+            example: "A: We should go to the beach.\nB: That's a good idea.",
+            hint: "idea"
+        },
+        {
+            korean: "나는 준비됐어.",
+            english: "I'm ready.",
+            example: "A: Are you ready to go?\nB: Yes, I'm ready.",
+            hint: "ready"
+        },
+        {
+            korean: "나는 놀랐어.",
+            english: "I'm surprised.",
+            example: "A: We're having a party for you.\nB: I'm surprised!",
+            hint: "surprised"
+        },
+        {
+            korean: "그것은 어려워.",
+            english: "It's difficult.",
+            example: "A: How is the math problem?\nB: It's difficult.",
+            hint: "difficult"
+        },
+        {
+            korean: "나는 궁금해.",
+            english: "I'm curious.",
+            example: "A: I have a secret.\nB: I'm curious. What is it?",
+            hint: "curious"
+        },
+        {
+            korean: "그것은 쉬워.",
+            english: "It's easy.",
+            example: "A: How was the test?\nB: It's easy.",
+            hint: "easy"
+        },
+        {
+            korean: "나는 그것을 좋아하지 않아.",
+            english: "I don't like it.",
+            example: "A: Do you like this food?\nB: I'm sorry, I don't like it.",
+            hint: "like"
+        },
+        {
+            korean: "나는 피자 먹고 싶어.",
+            english: "I want to eat pizza.",
+            example: "A: What should we order for dinner?\nB: I want to eat pizza.",
+            hint: "pizza"
+        },
+        {
+            korean: "나는 가야 해.",
+            english: "I have to go.",
+            example: "A: It's getting late.\nB: I have to go now.",
+            hint: "go"
+        },
+        {
+            korean: "나는 너를 도울 수 없어.",
+            english: "I can't help you.",
+            example: "A: Can you fix my car?\nB: I'm sorry, I can't help you.",
+            hint: "help"
+        },
+        {
+            korean: "나는 너와 함께 있을 거야.",
+            english: "I'll be with you.",
+            example: "A: I'm scared.\nB: Don't worry, I'll be with you.",
+            hint: "with"
+        },
+        {
+            korean: "나는 너무 흥분했어.",
+            english: "I'm so excited.",
+            example: "A: We're going to the concert tonight!\nB: I'm so excited.",
+            hint: "excited"
+        },
+        {
+            korean: "나중에 전화할게.",
+            english: "I'll call you later.",
+            example: "A: I have to go.\nB: Okay, I'll call you later.",
+            hint: "call"
+        },
+        {
+            korean: "너는 왜 그래?",
+            english: "Why are you like that?",
+            example: "A: I don't want to go.\nB: Why are you like that? It'll be fun!",
+            hint: "like that"
+        },
+        {
+            korean: "나는 너를 사랑해.",
+            english: "I love you.",
+            example: "A: (in a romantic relationship)\nB: I love you.",
+            hint: "love"
+        },
+        {
+            korean: "나는 돌아올 거야.",
+            english: "I'll be back.",
+            example: "A: Where are you going?\nB: I'll be back in five minutes.",
+            hint: "back"
+        },
+        {
+            korean: "나는 너에게 동의해.",
+            english: "I'm with you on this.",
+            example: "A: I think we should do this.\nB: I'm with you on this.",
+            hint: "on this"
+        },
+        {
+            korean: "나는 그것을 살 수 없어.",
+            english: "I can't afford it.",
+            example: "A: Let's buy this expensive bag!\nB: I can't afford it.",
+            hint: "afford"
+        },
+        {
+            korean: "나는 너를 기다릴게.",
+            english: "I'll wait for you.",
+            example: "A: I'm running a bit late.\nB: That's okay, I'll wait for you.",
+            hint: "wait"
+        },
+        {
+            korean: "나는 너를 보고 싶어.",
+            english: "I want to see you.",
+            example: "A: It's been a long time.\nB: I want to see you soon.",
+            hint: "see"
+        },
+        {
+            korean: "나중에 후회할 거야.",
+            english: "You'll regret it later.",
+            example: "A: I'm not going to study for the test.\nB: You'll regret it later.",
+            hint: "regret"
+        },
+        {
+            korean: "나는 너를 위해 기도할게.",
+            english: "I'll pray for you.",
+            example: "A: I have an important interview tomorrow.\nB: I'll pray for you.",
+            hint: "pray"
+        },
+        {
+            korean: "나는 그것을 믿을 수 없어.",
+            english: "I can't believe it.",
+            example: "A: I won the lottery!\nB: I can't believe it.",
+            hint: "believe"
+        },
+        {
+            korean: "나는 운이 좋았어.",
+            english: "I was lucky.",
+            example: "A: How did you get that ticket?\nB: I was lucky. I got the last one.",
+            hint: "lucky"
+        },
+        {
+            korean: "나는 행복해.",
+            english: "I'm happy.",
+            example: "A: You're smiling. What's up?\nB: I'm happy.",
+            hint: "happy"
+        },
+        {
+            korean: "나는 너를 기억할 거야.",
+            english: "I'll remember you.",
+            example: "A: I'm leaving for good.\nB: I'll remember you.",
+            hint: "remember"
+        },
+        {
+            korean: "나는 내일 일해야 해.",
+            english: "I have to work tomorrow.",
+            example: "A: Let's go out tonight.\nB: I can't, I have to work tomorrow.",
+            hint: "work"
+        },
+        {
+            korean: "나는 그럴 기분이 아니야.",
+            english: "I'm not in the mood.",
+            example: "A: Let's go to a party!\nB: I'm not in the mood.",
+            hint: "mood"
+        },
+        {
+            korean: "나중에 다시 올게요.",
+            english: "I'll be back later.",
+            example: "A: Are you leaving?\nB: Yes, but I'll be back later.",
+            hint: "back"
+        },
+        {
+            korean: "나는 그것을 잃어버렸어.",
+            english: "I lost it.",
+            example: "A: Where is my key?\nB: I'm so sorry, I lost it.",
+            hint: "lost"
+        },
+        {
+            korean: "나는 그것을 좋아하지 않아.",
+            english: "I don't like it.",
+            example: "A: Do you like this song?\nB: I don't like it.",
+            hint: "like"
+        },
+        {
+            korean: "나는 그것을 좋아해.",
+            english: "I like it.",
+            example: "A: How is the food?\nB: I like it.",
+            hint: "like"
+        },
+        {
+            korean: "나는 아프다.",
+            english: "I'm sick.",
+            example: "A: Why didn't you come to school?\nB: I'm sick.",
+            hint: "sick"
+        },
+        {
+            korean: "나는 괜찮아.",
+            english: "I'm fine.",
+            example: "A: How are you?\nB: I'm fine.",
+            hint: "fine"
+        },
+        {
+            korean: "나는 그것에 대해 잘 몰라.",
+            english: "I don't know much about it.",
+            example: "A: What do you think about this topic?\nB: I don't know much about it.",
+            hint: "know"
+        },
+        {
+            korean: "나는 너를 위해 여기에 있어.",
+            english: "I'm here for you.",
+            example: "A: I'm feeling sad.\nB: It's okay. I'm here for you.",
+            hint: "here"
+        },
+        {
+            korean: "나는 너에게 전화할게.",
+            english: "I'll give you a call.",
+            example: "A: Let's talk more later.\nB: I'll give you a call.",
+            hint: "call"
+        },
+        {
+            korean: "나는 그것을 잊었어.",
+            english: "I forgot about it.",
+            example: "A: Did you remember to bring the book?\nB: Oh no, I forgot about it.",
+            hint: "forgot"
+        },
+        {
+            korean: "나는 행복하지 않아.",
+            english: "I'm not happy.",
+            example: "A: You look sad.\nB: I'm not happy right now.",
+            hint: "happy"
+        },
+        {
+            korean: "나는 그것을 원해.",
+            english: "I want it.",
+            example: "A: What do you want for your birthday?\nB: I want it!",
+            hint: "want"
+        },
+        {
+            korean: "나는 그것을 원하지 않아.",
+            english: "I don't want it.",
+            example: "A: Do you want some cake?\nB: No, I don't want it.",
+            hint: "want"
+        },
+        {
+            korean: "나는 너를 믿어.",
+            english: "I trust you.",
+            example: "A: I promise I'll do it.\nB: I trust you.",
+            hint: "trust"
+        },
+        {
+            korean: "나는 그것을 모르겠어.",
+            english: "I have no idea.",
+            example: "A: Where did they go?\nB: I have no idea.",
+            hint: "idea"
+        },
+        {
+            korean: "나는 그것을 알고 있어.",
+            english: "I know that.",
+            example: "A: Did you know that fact?\nB: Yes, I know that.",
+            hint: "know"
+        },
+        {
+            korean: "나는 배가 불러.",
+            english: "I'm full.",
+            example: "A: Do you want more food?\nB: No, thanks. I'm full.",
+            hint: "full"
+        },
+        {
+            korean: "나는 피자를 좋아해.",
+            english: "I like pizza.",
+            example: "A: What's your favorite food?\nB: I like pizza.",
+            hint: "pizza"
+        },
+        {
+            korean: "나는 그것을 할 수 있어.",
+            english: "I can do it.",
+            example: "A: Are you sure you can finish this?\nB: Don't worry, I can do it.",
+            hint: "do"
+        },
+        {
+            korean: "나는 너에게 감사해.",
+            english: "I appreciate you.",
+            example: "A: Thanks for the help.\nB: I appreciate you so much.",
+            hint: "appreciate" },
+        { korean: "나는 그것을 샀어.", english: "I bought it.", example: "A: Where did you get that?\nB: I bought it yesterday.", hint: "bought" },
+        { korean: "나는 거짓말하지 않아.", english: "I'm not lying.", example: "A: Are you sure you're telling the truth?\nB: I'm not lying.", hint: "lying" },
+        { korean: "나는 너를 위해 요리할게.", english: "I'll cook for you.", example: "A: I'm hungry.\nB: Don't worry, I'll cook for you.", hint: "cook" },
+        { korean: "나는 그것에 대해 생각할게.", english: "I'll think about it.", example: "A: Do you want to join us?\nB: I'll think about it and let you know.", hint: "think" },
+        { korean: "나는 너를 기다릴게.", english: "I'll wait for you.", example: "A: I'm running a bit late.\nB: No problem, I'll wait for you.", hint: "wait" },
+        { korean: "나는 그것을 원해.", english: "I want it.", example: "A: What do you want for dinner?\nB: I want it!", hint: "want" },
+        { korean: "나는 그것을 원하지 않아.", english: "I don't want it.", example: "A: Do you want more ice cream?\nB: No, I don't want it.", hint: "want" },
+        { korean: "나는 너에게 동의해.", english: "I'm with you on that.", example: "A: This plan is the best one.\nB: I'm with you on that.", hint: "with" },
+        { korean: "나는 그것을 잃어버렸어.", english: "I lost it.", example: "A: Where is my phone?\nB: I lost it.", hint: "lost" },
+        { korean: "나는 너에게 전화할게.", english: "I'll call you.", example: "A: Let's talk more about this.\nB: I'll call you later.", hint: "call" },
+        { korean: "나는 그것을 잊었어.", english: "I forgot.", example: "A: Did you do the homework?\nB: Oh no, I forgot.", hint: "forgot" }
+    ];
+
+    let phrasesToPractice = [];
+    let wrongAnswers = JSON.parse(localStorage.getItem('wrongAnswers')) || [];
+    let currentPhraseIndex = 0;
+    let totalCorrect = 0;
+    
+    const startScreenEl = document.getElementById('start-screen');
+    const practiceScreenEl = document.getElementById('practice-screen');
+    const endScreenEl = document.getElementById('end-screen');
+    const koreanPhraseEl = document.getElementById('korean-phrase');
+    const englishInputEl = document.getElementById('english-input');
+    const checkBtn = document.getElementById('check-btn');
+    const speakBtn = document.getElementById('speak-btn');
+    const nextBtn = document.getElementById('next-btn');
+    const revealBtn = document.getElementById('reveal-btn');
+    const messageBoxEl = document.getElementById('message-box');
+    const exampleDialogueEl = document.getElementById('example-dialogue');
+    const progressBarEl = document.getElementById('progress-bar');
+    const listeningStatusEl = document.getElementById('listening-status');
+    const endMessageEl = document.getElementById('end-message');
+    const endScoreEl = document.getElementById('end-score');
+    
+    // Web Speech API는 브라우저에 내장되어 있어 별도의 API 키나 서버 호출이 필요 없습니다.
+    const speech = window.speechSynthesis;
+    const voice = 'Kore';
+
+    let koreanVoice = null;
+    function loadVoices() {
+        if (speech.getVoices().length > 0) {
+            koreanVoice = speech.getVoices().find(v => v.lang === 'ko-KR');
+        }
+    }
+    loadVoices();
+    if (speech.onvoiceschanged !== undefined) {
+        speech.onvoiceschanged = loadVoices;
+    }
+
+    function speakText(text) {
+        if (speech && koreanVoice) {
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.voice = koreanVoice;
+            speech.speak(utterance);
+        } else {
+            console.error('SpeechSynthesis API not supported or Korean voice not found.');
+        }
+    }
+
+    function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+    }
+
+    function saveWrongAnswer(phrase) {
+        if (!wrongAnswers.some(item => item.english === phrase.english)) {
+            wrongAnswers.push(phrase);
+            localStorage.setItem('wrongAnswers', JSON.stringify(wrongAnswers));
+        }
+    }
+
+    window.startPractice = function(count) {
+        shuffleArray(allPhrases);
+        phrasesToPractice = allPhrases.slice(0, count);
+        currentPhraseIndex = 0;
+        totalCorrect = 0;
+        
+        startScreenEl.style.display = 'none';
+        practiceScreenEl.style.display = 'block';
+        endScreenEl.style.display = 'none';
+        
+        displayPhrase();
+    }
+    
+    window.startWrongAnswersPractice = function() {
+        if (wrongAnswers.length === 0) {
+            alert('아직 틀린 문장이 없어요!');
+            return;
+        }
+        shuffleArray(wrongAnswers);
+        phrasesToPractice = [...wrongAnswers];
+        wrongAnswers = [];
+        localStorage.setItem('wrongAnswers', JSON.stringify(wrongAnswers));
+        currentPhraseIndex = 0;
+        totalCorrect = 0;
+        
+        startScreenEl.style.display = 'none';
+        practiceScreenEl.style.display = 'block';
+        endScreenEl.style.display = 'none';
+        
+        displayPhrase();
+    }
+    
+    window.restartPractice = function() {
+        startScreenEl.style.display = 'block';
+        practiceScreenEl.style.display = 'none';
+        endScreenEl.style.display = 'none';
+    }
+
+    window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    let recognition;
+    if (window.SpeechRecognition) {
+        recognition = new SpeechRecognition();
+        recognition.lang = 'en-US';
+        recognition.interimResults = false;
+        recognition.maxAlternatives = 1;
+
+        recognition.addEventListener('result', (event) => {
+            const transcript = event.results[0][0].transcript;
+            englishInputEl.value = transcript;
+            checkAnswer(transcript);
+        });
+
+        recognition.addEventListener('end', () => {
+            listeningStatusEl.style.display = 'none';
+            checkBtn.disabled = false;
+            speakBtn.disabled = false;
+        });
+
+        recognition.addEventListener('error', (event) => {
+            console.error('Speech recognition error:', event.error);
+            messageBoxEl.textContent = `음성 인식에 문제가 발생했습니다: ${event.error}`;
+            messageBoxEl.className = 'message-box error-message';
+            messageBoxEl.style.display = 'block';
+            listeningStatusEl.style.display = 'none';
+            checkBtn.disabled = false;
+            speakBtn.disabled = false;
+        });
+    } else {
+        speakBtn.textContent = '음성 인식 지원 불가';
+        speakBtn.disabled = true;
+        messageBoxEl.textContent = '죄송합니다. 이 브라우저에서는 음성 인식을 지원하지 않습니다. 키보드로 입력해 주세요.';
+        messageBoxEl.className = 'message-box error-message';
+        messageBoxEl.style.display = 'block';
+    }
+    
+    speakBtn.addEventListener('click', () => {
+        if (recognition) {
+            englishInputEl.value = '';
+            recognition.start();
+            listeningStatusEl.style.display = 'block';
+            checkBtn.disabled = true;
+            speakBtn.disabled = true;
+        }
+    });
+
+    function displayPhrase() {
+        if (currentPhraseIndex < phrasesToPractice.length) {
+            koreanPhraseEl.textContent = phrasesToPractice[currentPhraseIndex].korean;
+            englishInputEl.value = '';
+            englishInputEl.disabled = false;
+            checkBtn.style.display = 'inline-block';
+            speakBtn.style.display = 'inline-block';
+            nextBtn.style.display = 'none';
+            revealBtn.style.display = 'inline-block';
+            messageBoxEl.style.display = 'none';
+            exampleDialogueEl.style.display = 'none';
+            englishInputEl.focus();
+        } else {
+            practiceScreenEl.style.display = 'none';
+            endScreenEl.style.display = 'block';
+            endMessageEl.textContent = '축하합니다! 연습을 마쳤어요!';
+            endScoreEl.textContent = `총 ${phrasesToPractice.length}개 중 ${totalCorrect}개를 맞혔습니다.`;
+        }
+    }
+
+    async function checkAnswer(userAnswer) {
+        const cleanedUserAnswer = userAnswer.trim().toLowerCase().replace(/[.,!?]/g, '');
+        const correctAnswer = phrasesToPractice[currentPhraseIndex].english.trim().toLowerCase().replace(/[.,!?]/g, '');
+
+        if (cleanedUserAnswer === correctAnswer) {
+            messageBoxEl.textContent = '정답입니다! 정말 잘했어요!';
+            messageBoxEl.className = 'message-box correct-message';
+            englishInputEl.disabled = true;
+            totalCorrect++;
+            checkBtn.style.display = 'none';
+            speakBtn.style.display = 'none';
+            nextBtn.style.display = 'inline-block';
+            revealBtn.style.display = 'none';
+            englishInputEl.classList.add('correct');
+        } else {
+            const hint = phrasesToPractice[currentPhraseIndex].hint;
+            messageBoxEl.textContent = `아쉽지만 다시 한번 생각해보세요. 힌트: **${hint}**`;
+            messageBoxEl.className = 'message-box error-message';
+            englishInputEl.classList.add('wrong');
+            englishInputEl.disabled = false;
+            checkBtn.disabled = false;
+            speakBtn.disabled = false;
+            saveWrongAnswer(phrasesToPractice[currentPhraseIndex]);
+        }
+        messageBoxEl.style.display = 'block';
+        setTimeout(() => {
+            englishInputEl.classList.remove('correct', 'wrong');
+        }, 1000);
+    }
+
+    async function revealAnswer() {
+        const currentPhrase = phrasesToPractice[currentPhraseIndex];
+        englishInputEl.value = currentPhrase.english;
+        englishInputEl.disabled = true;
+        messageBoxEl.textContent = `정답은 "${currentPhrase.english}"입니다.`;
+        messageBoxEl.className = 'message-box';
+        messageBoxEl.style.display = 'block';
+        
+        exampleDialogueEl.textContent = `예시 대화:\n${currentPhrase.example}`;
+        exampleDialogueEl.style.display = 'block';
+
+        checkBtn.style.display = 'none';
+        speakBtn.style.display = 'none';
+        nextBtn.style.display = 'inline-block';
+        revealBtn.style.display = 'none';
+        
+        saveWrongAnswer(currentPhrase);
+    }
+
+    function nextQuestion() {
+        currentPhraseIndex++;
+        updateProgressBar();
+        displayPhrase();
+    }
+    
+    function updateProgressBar() {
+        const progressPercentage = ((currentPhraseIndex) / phrasesToPractice.length) * 100;
+        progressBarEl.style.width = `${progressPercentage}%`;
+    }
+
+    checkBtn.addEventListener('click', () => {
+        checkAnswer(englishInputEl.value);
+    });
+    nextBtn.addEventListener('click', nextQuestion);
+    revealBtn.addEventListener('click', revealAnswer);
+    englishInputEl.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            checkAnswer(englishInputEl.value);
+        }
+    });
+
+</script>
+
+</body>
+</html>
